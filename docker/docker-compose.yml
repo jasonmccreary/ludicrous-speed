@@ -1,0 +1,32 @@
+version: '2.2'
+
+services:
+  web:
+    image: registry.gitlab.com/ralphschindler/laravel-docker-container-lite:latest
+    environment:
+      APP_NAME: my-app
+      APP_ENV: local
+      XDEBUG_CONFIG: remote_enable=1
+      PHP_IDE_CONFIG: serverName=localhost
+    ports:
+      - 8080:80
+    volumes:
+      - ../conf/nginx.conf:/etc/nginx/sites-available/default
+      - ../:/app
+    links:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:5.7
+    command: mysqld --user=root --verbose --skip-sync-frm --innodb_flush_log_at_trx_commit=0 --innodb-support-xa=0 --bind-address=0.0.0.0 --query-cache-type=1
+    ports:
+      - 33060:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: developer
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: developer
+
+  redis:
+    image: redis:latest

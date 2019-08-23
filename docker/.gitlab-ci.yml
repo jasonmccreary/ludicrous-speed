@@ -1,0 +1,14 @@
+---
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+dockerimage:
+  image: docker:stable
+  only:
+  - tags
+  services:
+  - docker:dind
+  stage: build
+  script:
+  - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+  - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
